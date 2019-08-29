@@ -27,40 +27,32 @@ void showPixel() {
 
 void fadeOutPixel() {
   //Serial.println("fade out");
-  for (int i = 0; i < maxLights; i++)
-  {
-    for (int j = 0; j < numPixels; j++)
-    {
+  for (int i = 0; i < maxLights; i++) {
+    for (int j = 0; j < numPixels; j++) {
       uint32_t color = strips[i].getPixelColor(j);
 
-      if (color != 0 && allowRelease[i][j] == true)
-      {
+      if (color != 0 && allowRelease[i][j] == true) {
         int currentBlue =  color & 255;
         int currentGreen = (color >> 8) & 255;
         int currentRed =   (color >> 16) & 255;
 
-        if ((currentRed - 10) > 0)
-        {
+        if ((currentRed - 10) > 0) {
           currentRed = currentRed - 10;
         } else if (delayValue > 1) {
           currentRed = delayValue;
-        }
-        else {
+        } else {
           currentRed = 0;
         }
 
-        if ((currentGreen - 10) > 0)
-        {
+        if ((currentGreen - 10) > 0) {
           currentGreen = currentGreen - 10;
         } else if (delayValue > 1) {
           currentGreen =  delayValue;
-        }
-        else {
+        } else {
           currentGreen = 0;
         }
 
-        if ((currentBlue - 10) > 0)
-        {
+        if ((currentBlue - 10) > 0) {
           currentBlue = currentBlue - 10;
         } else if (delayValue > 1) {
           currentBlue = delayValue;
@@ -70,11 +62,9 @@ void fadeOutPixel() {
 
         strips[i].setPixelColor(j, strips[i].Color(currentRed, currentGreen, currentBlue));
 
-        if (currentRed == 0 && currentGreen == 0 && currentBlue == 0)
-        {
+        if (currentRed == 0 && currentGreen == 0 && currentBlue == 0) {
           allowRelease[i][j] = false;
         }
-
       }
     }
   }
@@ -83,36 +73,30 @@ void fadeOutPixel() {
 void fadeInPixel() {
   //Serial.println("fadeInPixel");
 
-  for (int i = 0; i < maxLights; i++)
-  {
-    for (int j = 0; j < numPixels; j++)
-    {
+  for (int i = 0; i < maxLights; i++) {
+    for (int j = 0; j < numPixels; j++) {
       uint32_t color = strips[i].getPixelColor(j);
 
-      if (color > 0 && color < 16777215 && allowRelease[i][j] == false)
-      {
+      if (color > 0 && color < 16777215 && allowRelease[i][j] == false) {
         //Serial.println("fade in");
 
         int currentBlue =  color & 255;
         int currentGreen = (color >> 8) & 255;
         int currentRed =   (color >> 16) & 255;
 
-        if ((currentRed + 10) < cutoffValue)
-        {
+        if ((currentRed + 10) < cutoffValue) {
           currentRed = currentRed + 10;
         } else {
           currentRed = cutoffValue;
         }
 
-        if ((currentGreen + 10) < cutoffValue)
-        {
+        if ((currentGreen + 10) < cutoffValue) {
           currentGreen = currentGreen + 10;
         } else {
           currentGreen = cutoffValue;
         }
 
-        if ((currentBlue + 10) < cutoffValue)
-        {
+        if ((currentBlue + 10) < cutoffValue) {
           currentBlue = currentBlue + 10;
         } else {
           currentBlue = cutoffValue;

@@ -52,8 +52,7 @@ unsigned long now, nextLightInterval, nextPotisInterval, nextButtonsInterval, ne
 
 void setup() {
   MIDI.setHandleNoteOn(handleNoteOn);
-  MIDI.setHandleNoteOff(handleNoteOff);
-  //MIDI.setHandleClock(handleMidiClock);
+  // MIDI.setHandleNoteOff(handleNoteOff);
   MIDI.begin(1);
   MIDI2.begin(2);
 
@@ -89,8 +88,8 @@ void setup() {
   }
 
   //INIT FIRST PATTERN & FIRST MODULATON
-  digitalWrite(patternButtons[0][1], HIGH);
-  digitalWrite(modulationButtons[0][1], HIGH);
+  changePattern(0);
+  changeModulation(0)
 }
 
 void initAttackArray() {
@@ -102,13 +101,7 @@ void initAttackArray() {
   }
 }
 
-
-void handleMidiClock(){
-  //Serial.println("clock");
-}
-
-void handleNoteOn(byte channel, byte noteByte, byte velocityByte)
-{
+void handleNoteOn(byte channel, byte noteByte, byte velocityByte) {
   //Serial.println("handleNoteOn");
   if (noteByte > 35 && noteByte < 42)
   {
@@ -118,8 +111,7 @@ void handleNoteOn(byte channel, byte noteByte, byte velocityByte)
   showCurrentPattern();
 }
 
-void handleNoteOff(byte channel, byte noteByte, byte velocityByte)
-{
+void handleNoteOff(byte channel, byte noteByte, byte velocityByte) {
   //Serial.println("handleNoteOff");
   hideCurrentPattern();
 }
@@ -149,7 +141,6 @@ void checkPotis() {
     potiValues[i] = analogRead(potis[i]);
 
     if (potiValues[i] != prevPotiValues[i] && potiValues[i] != prevPotiValues[i] + 1 && potiValues[i] != prevPotiValues[i] - 1) {
-
       if (i == 0) {
         cutoffValue = map(potiValues[i], 0, 1023, 10, 255);
         int midiCutoffValue = map(potiValues[i], 0, 1023, 0, 127);
@@ -198,7 +189,6 @@ void checkButtons() {
     prevModulationValues[j] = modulationValues[j];
   }
 }
-
 
 void changePattern(int nextPattern) {
   resetPixel();
@@ -272,7 +262,6 @@ void hideCurrentPattern() {
 
 void loop() {
   now = millis();
-
   MIDI.read();
 
   if (now >= nextLightInterval) {
@@ -281,12 +270,12 @@ void loop() {
   }
 
   if (now >= nextPotisInterval) {
-    nextPotisInterval = now + 70;
+    nextPotisInterval = now + 175;
     checkPotis();
   }
 
   if (now >= nextButtonsInterval) {
-    nextButtonsInterval = now + 70;
+    nextButtonsInterval = now + 175;
     checkButtons();
   }
 
@@ -295,7 +284,7 @@ void loop() {
     {
       fadeOutPixel();
     }
-    nextFadeOutInterval = now + (releaseValue * 13);
+    nextFadeOutInterval = now + (releaseValue * 10);
   }
 
   if (now >= nextFadeInInterval) {
@@ -305,7 +294,7 @@ void loop() {
     } else {
       initAttackArray();
     }
-    nextFadeInInterval = now + (attackValue * 23);
+    nextFadeInInterval = now + (attackValue * 10);
   }
 }
 
