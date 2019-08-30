@@ -14,22 +14,20 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI2);
 int patternValues[maxPattern];
 int prevPatternValues[maxPattern];
 int patternButtons[maxPattern][2] = {
-  {42, 43},
-  {44, 45},
-  {46, 47},
-  {48, 49},
-  {50, 51},
-  {52, 53}
-};
+    {42, 43},
+    {44, 45},
+    {46, 47},
+    {48, 49},
+    {50, 51},
+    {52, 53}};
 
 #define maxModulation 3
 int modulationValues[maxModulation];
 int prevModulationValues[maxModulation];
 int modulationButtons[maxModulation][2] = {
-  {28, 29},
-  {30, 31},
-  {32, 33}
-};
+    {28, 29},
+    {30, 31},
+    {32, 33}};
 
 // cutoff, release, attack, delay
 #define maxPotis 4
@@ -50,7 +48,8 @@ int blue = 1;
 
 unsigned long now, nextLightInterval, nextPotisInterval, nextButtonsInterval, nextFadeOutInterval, nextFadeInInterval;
 
-void setup() {
+void setup()
+{
   MIDI.setHandleNoteOn(handleNoteOn);
   // MIDI.setHandleNoteOff(handleNoteOff);
   MIDI.begin(1);
@@ -89,19 +88,22 @@ void setup() {
 
   //INIT FIRST PATTERN & FIRST MODULATON
   changePattern(0);
-  changeModulation(0)
+  changeModulation(0);
 }
 
-void initAttackArray() {
+void initAttackArray()
+{
   for (int i = 0; i < maxLights; i++)
   {
-    for (int j = 0; j < numPixels; j++) {
+    for (int j = 0; j < numPixels; j++)
+    {
       allowRelease[i][j] = true;
     }
   }
 }
 
-void handleNoteOn(byte channel, byte noteByte, byte velocityByte) {
+void handleNoteOn(byte channel, byte noteByte, byte velocityByte)
+{
   //Serial.println("handleNoteOn");
   if (noteByte > 35 && noteByte < 42)
   {
@@ -111,49 +113,71 @@ void handleNoteOn(byte channel, byte noteByte, byte velocityByte) {
   showCurrentPattern();
 }
 
-void handleNoteOff(byte channel, byte noteByte, byte velocityByte) {
+void handleNoteOff(byte channel, byte noteByte, byte velocityByte)
+{
   //Serial.println("handleNoteOff");
   hideCurrentPattern();
 }
 
-void changeProgramAutomatically(byte noteByte, byte velocityByte) {
+void changeProgramAutomatically(byte noteByte, byte velocityByte)
+{
   int modulationByte = map(velocityByte, 0, 127, 0, 2);
   changeModulation(modulationByte);
 
-  if (noteByte == 36) {
+  if (noteByte == 36)
+  {
     changePattern(0);
-  } else if (noteByte == 37) {
+  }
+  else if (noteByte == 37)
+  {
     changePattern(1);
-  } else if (noteByte == 38) {
+  }
+  else if (noteByte == 38)
+  {
     changePattern(2);
-  } else if (noteByte == 39) {
+  }
+  else if (noteByte == 39)
+  {
     changePattern(3);
-  } else if (noteByte == 40) {
+  }
+  else if (noteByte == 40)
+  {
     changePattern(4);
-  } else if (noteByte == 41) {
+  }
+  else if (noteByte == 41)
+  {
     changePattern(5);
   }
 }
 
-void checkPotis() {
+void checkPotis()
+{
   for (int i = 0; i < maxPotis; i++)
   {
     potiValues[i] = analogRead(potis[i]);
 
-    if (potiValues[i] != prevPotiValues[i] && potiValues[i] != prevPotiValues[i] + 1 && potiValues[i] != prevPotiValues[i] - 1) {
-      if (i == 0) {
+    if (potiValues[i] != prevPotiValues[i] && potiValues[i] != prevPotiValues[i] + 1 && potiValues[i] != prevPotiValues[i] - 1)
+    {
+      if (i == 0)
+      {
         cutoffValue = map(potiValues[i], 0, 1023, 10, 255);
         int midiCutoffValue = map(potiValues[i], 0, 1023, 0, 127);
         MIDI2.sendControlChange(1, midiCutoffValue, 1);
-      } else if (i == 1) {
+      }
+      else if (i == 1)
+      {
         attackValue = map(potiValues[i], 0, 1023, 1, 10);
         int midiAttackValue = map(potiValues[i], 0, 1023, 0, 127);
         MIDI2.sendControlChange(2, midiAttackValue, 1);
-      } else if (i == 2) {
+      }
+      else if (i == 2)
+      {
         releaseValue = map(potiValues[i], 0, 1023, 1, 10);
         int midiReleaseValue = map(potiValues[i], 0, 1023, 0, 127);
         MIDI2.sendControlChange(3, midiReleaseValue, 1);
-      } else if (i == 3) {
+      }
+      else if (i == 3)
+      {
         delayValue = map(potiValues[i], 0, 1023, 1, 255);
         int midiDelayValue = map(potiValues[i], 0, 1023, 0, 127);
         MIDI2.sendControlChange(4, midiDelayValue, 1);
@@ -163,10 +187,12 @@ void checkPotis() {
   }
 }
 
-void checkButtons() {
+void checkButtons()
+{
 
   //CHECK PATTERN
-  for (int i = 0; i < maxPattern; i++) {
+  for (int i = 0; i < maxPattern; i++)
+  {
     patternValues[i] = digitalRead(patternButtons[i][0]);
 
     if (patternValues[i] == LOW && prevPatternValues[i] == HIGH)
@@ -178,7 +204,8 @@ void checkButtons() {
   }
 
   //CHECK MODULATION
-  for (int j = 0; j < maxModulation; j++) {
+  for (int j = 0; j < maxModulation; j++)
+  {
     modulationValues[j] = digitalRead(modulationButtons[j][0]);
 
     if (modulationValues[j] == LOW && prevModulationValues[j] == HIGH)
@@ -190,7 +217,8 @@ void checkButtons() {
   }
 }
 
-void changePattern(int nextPattern) {
+void changePattern(int nextPattern)
+{
   resetPixel();
   showPixel();
 
@@ -203,19 +231,22 @@ void changePattern(int nextPattern) {
   currentPattern = nextPattern;
 }
 
-void changeModulation(int nextModulation) {
+void changeModulation(int nextModulation)
+{
 
   if (nextModulation == 0)
   {
     digitalWrite(modulationButtons[0][1], HIGH);
     digitalWrite(modulationButtons[1][1], LOW);
     digitalWrite(modulationButtons[2][1], LOW);
-  } else if (nextModulation == 1)
+  }
+  else if (nextModulation == 1)
   {
     digitalWrite(modulationButtons[0][1], HIGH);
     digitalWrite(modulationButtons[1][1], HIGH);
     digitalWrite(modulationButtons[2][1], LOW);
-  } else if (nextModulation == 2)
+  }
+  else if (nextModulation == 2)
   {
     digitalWrite(modulationButtons[0][1], HIGH);
     digitalWrite(modulationButtons[1][1], HIGH);
@@ -225,88 +256,107 @@ void changeModulation(int nextModulation) {
   currentModulation = nextModulation;
 }
 
-void showCurrentPattern() {
+void showCurrentPattern()
+{
 
   //Serial.println(currentPattern);
 
-  if (currentPattern == 0) {
+  if (currentPattern == 0)
+  {
     showPattern1();
-  } else if (currentPattern == 1) {
+  }
+  else if (currentPattern == 1)
+  {
     showPattern4();
-  } else if (currentPattern == 2) {
+  }
+  else if (currentPattern == 2)
+  {
     showPattern6();
-  } else if (currentPattern == 3) {
+  }
+  else if (currentPattern == 3)
+  {
     showPattern3();
-  } else if (currentPattern == 4) {
+  }
+  else if (currentPattern == 4)
+  {
     showPattern2();
-  } else if (currentPattern == 5) {
+  }
+  else if (currentPattern == 5)
+  {
     showPattern5();
   }
 }
 
-void hideCurrentPattern() {
-  if (currentPattern == 0) {
+void hideCurrentPattern()
+{
+  if (currentPattern == 0)
+  {
     hidePattern1();
-  } else if (currentPattern == 1) {
+  }
+  else if (currentPattern == 1)
+  {
     hidePattern4();
-  } else if (currentPattern == 2) {
+  }
+  else if (currentPattern == 2)
+  {
     hidePattern6();
-  } else if (currentPattern == 3) {
+  }
+  else if (currentPattern == 3)
+  {
     hidePattern3();
-  } else if (currentPattern == 4 ) {
+  }
+  else if (currentPattern == 4)
+  {
     hidePattern2();
-  } else if (currentPattern == 5) {
+  }
+  else if (currentPattern == 5)
+  {
     hidePattern5();
   }
 }
 
-void loop() {
+void loop()
+{
   now = millis();
   MIDI.read();
 
-  if (now >= nextLightInterval) {
+  if (now >= nextLightInterval)
+  {
     nextLightInterval = now + 10;
     showPixel();
   }
 
-  if (now >= nextPotisInterval) {
-    nextPotisInterval = now + 175;
+  if (now >= nextPotisInterval)
+  {
+    nextPotisInterval = now + 100;
     checkPotis();
   }
 
-  if (now >= nextButtonsInterval) {
-    nextButtonsInterval = now + 175;
+  if (now >= nextButtonsInterval)
+  {
+    nextButtonsInterval = now + 100;
     checkButtons();
   }
 
-  if (now >= nextFadeOutInterval) {
+  if (now >= nextFadeOutInterval)
+  {
     if (releaseValue < 10)
     {
       fadeOutPixel();
     }
-    nextFadeOutInterval = now + (releaseValue * 10);
+    nextFadeOutInterval = now + (releaseValue * 13);
   }
 
-  if (now >= nextFadeInInterval) {
+  if (now >= nextFadeInInterval)
+  {
     if (attackValue > 1)
     {
       fadeInPixel();
-    } else {
+    }
+    else
+    {
       initAttackArray();
     }
-    nextFadeInInterval = now + (attackValue * 10);
+    nextFadeInInterval = now + (attackValue * 23);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
